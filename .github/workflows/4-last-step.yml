@@ -1,0 +1,74 @@
+name: Step 4 # Merger la pull request
+
+on:
+  pull_request:
+    branches:
+      - main
+    types:
+      - closed
+
+permissions:
+  contents: write
+  actions: write
+  issues: write
+  pull-requests: read
+
+env:
+  REVIEW_FILE: ".github/steps/x-review.md"
+  TOOLKIT_REPOSITORY: "ENSTASIMOV/exercise-toolkit-fr"
+  TOOLKIT_REF: "main"
+
+jobs:
+  find_exercise:
+    if: |
+      !github.event.repository.is_template &&
+      github.event.pull_request.merged == true &&
+      github.event.pull_request.head.ref == 'my-first-branch'
+    name: Retrouver l'Issue de l'exercice
+    uses: ENSTASIMOV/exercise-toolkit-fr/.github/workflows/find-exercise-issue.yml@main
+
+  post_review_content:
+    name: Publier le bilan
+    needs: [find_exercise]
+    runs-on: ubuntu-latest
+    env:
+      ISSUE_REPOSITORY: ${{ github.repository }}
+      ISSUE_NUMBER: ${{ needs.find_exercise.outputs.issue-number }}
+
+    steps:
+      - name: Récupérer le dépôt
+        uses: actions/checkout@v4
+
+      - name: Récupérer les templates français
+        uses: actions/checkout@v4
+        with:
+          repository: ${{ env.TOOLKIT_REPOSITORY }}
+          path: exercise-toolkit-fr
+          ref: ${{ env.TOOLKIT_REF }}
+
+      - name: Introduire le bilan
+        uses: GrantBirki/comment@v2.1.1
+        with:
+          repository: ${{ env.ISSUE_REPOSITORY }}
+          issue-number: ${{ env.ISSUE_NUMBER }}
+          file: exercise-toolkit-fr/markdown-templates/step-feedback/lesson-review.md
+
+      - name: Publier le bilan du cours
+        uses: GrantBirki/comment@v2.1.1
+        with:
+          repository: ${{ env.ISSUE_REPOSITORY }}
+          issue-number: ${{ env.ISSUE_NUMBER }}
+          file: ${{ env.REVIEW_FILE }}
+
+      - name: Désactiver le dernier workflow
+        run: gh workflow disable "${{ github.workflow }}"
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  finish_exercise:
+    name: Terminer l'exercice
+    needs: [find_exercise, post_review_content]
+    uses: ENSTASIMOV/exercise-toolkit-fr/.github/workflows/finish-exercise.yml@main
+    with:
+      issue-url: ${{ needs.find_exercise.outputs.issue-url }}
+      exercise-title: "GitHub Basics"
