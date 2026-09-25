@@ -29,7 +29,7 @@ Il contient notamment :
 1. Dans l'onglet **Code**, vérifie que la branche affichée est bien `my-first-branch`.
 2. Clique sur **Add file**, puis **Create new file**.
 
-   <img width="300" alt="Créer un nouveau fichier dans GitHub" src="https://github.com/FIPATECH/github-basics2/blob/main/.github/images/create-new-file-option.png?raw=true">
+   <img width="300" alt="Créer un nouveau fichier dans GitHub" src="../images/create-new-file-option.png">
 
 3. Dans **Name your file...**, saisis :
 
@@ -47,7 +47,7 @@ Il contient notamment :
    Je découvre les branches, les commits et la collaboration sur GitHub.
    ```
 
-   ![Éditeur GitHub contenant PROFILE.md](https://github.com/FIPATECH/github-basics2/blob/main/.github/images/add-profile-file.png?raw=true)
+   ![Éditeur GitHub contenant PROFILE.md](../images/add-profile-file.png)
 
 5. Clique sur **Preview** au-dessus de l'éditeur et observe comment GitHub rend le Markdown.
 6. Reviens dans l'éditeur si tu veux corriger quelque chose, puis clique sur **Commit changes...**.
