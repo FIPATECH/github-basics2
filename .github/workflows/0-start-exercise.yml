@@ -11,19 +11,21 @@ permissions:
   issues: write
 
 env:
-  STEP_1_FILE: ".github/steps/1-step.md"
-  TOOLKIT_REPOSITORY: "ENSTASIMOV/exercise-toolkit-fr"
-  TOOLKIT_REF: "main"
+  STEP_1_FILE: ".github/steps/1-create-a-branch.md"
+  TOOLKIT_REPOSITORY: "ENSTARobotics/exercise-toolkit-fr"
+  TOOLKIT_REF: "19f8395fee473aca8af74039182a41cdda9ab0e3"
 
 jobs:
   start_exercise:
     if: |
       !github.event.repository.is_template
     name: Démarrer l'exercice
-    uses: ENSTASIMOV/exercise-toolkit-fr/.github/workflows/start-exercise.yml@main
+    uses: ENSTARobotics/exercise-toolkit-fr/.github/workflows/start-exercise.yml@19f8395fee473aca8af74039182a41cdda9ab0e3
     with:
       exercise-title: "GitHub Basics"
-      intro-message: "Ce cours va te guider pas à pas pour découvrir le fonctionnement essentiel de GitHub : branches, commits, pull requests et merge."
+      intro-message: "Tu vas apprendre les bases de GitHub en réalisant une petite modification guidée. Chaque notion sera expliquée juste avant sa première utilisation."
+      manage-workflows: true
+      toolkit-ref: "19f8395fee473aca8af74039182a41cdda9ab0e3"
 
   post_next_step_content:
     name: Afficher l'étape 1
@@ -35,32 +37,48 @@ jobs:
 
     steps:
       - name: Récupérer le dépôt
-        uses: actions/checkout@v4
+        uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
         with:
           ref: main
 
       - name: Récupérer les templates français
-        uses: actions/checkout@v4
+        uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
         with:
           repository: ${{ env.TOOLKIT_REPOSITORY }}
           path: exercise-toolkit-fr
           ref: ${{ env.TOOLKIT_REF }}
 
       - name: Publier l'étape 1
-        uses: GrantBirki/comment@v2.1.1
+        uses: GrantBirki/comment@608e41b19bc973020ec0e189ebfdae935d7fe0cc # v2.1.1
         with:
           repository: ${{ env.ISSUE_REPOSITORY }}
           issue-number: ${{ env.ISSUE_NUMBER }}
           file: ${{ env.STEP_1_FILE }}
 
       - name: Indiquer que la progression est surveillée
-        uses: GrantBirki/comment@v2.1.1
+        uses: GrantBirki/comment@608e41b19bc973020ec0e189ebfdae935d7fe0cc # v2.1.1
         with:
           repository: ${{ env.ISSUE_REPOSITORY }}
           issue-number: ${{ env.ISSUE_NUMBER }}
           file: exercise-toolkit-fr/markdown-templates/step-feedback/watching-for-progress.md
 
-      - name: Activer l'étape suivante
-        run: gh workflow enable "Step 1"
+      - name: Activer l'étape 1 et rattraper une branche déjà créée
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          set -euo pipefail
+
+          current_state="$(gh api "repos/${GITHUB_REPOSITORY}/actions/workflows/0-start-exercise.yml" --jq '.state')"
+          if [ "$current_state" = "active" ]; then
+            gh api --method PUT "repos/${GITHUB_REPOSITORY}/actions/workflows/0-start-exercise.yml/disable"
+          fi
+
+          next_state="$(gh api "repos/${GITHUB_REPOSITORY}/actions/workflows/1-create-a-branch.yml" --jq '.state')"
+          if [ "$next_state" != "active" ]; then
+            gh api --method PUT "repos/${GITHUB_REPOSITORY}/actions/workflows/1-create-a-branch.yml/enable"
+          fi
+
+          if gh api "repos/${GITHUB_REPOSITORY}/branches/my-first-branch" >/dev/null 2>&1; then
+            echo "La branche existe déjà : lancement immédiat de l'étape 1."
+            gh workflow run 1-create-a-branch.yml --ref my-first-branch
+          fi
