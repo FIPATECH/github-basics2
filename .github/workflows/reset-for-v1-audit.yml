@@ -1,0 +1,82 @@
+name: Reset V1 audit
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - ".github/workflows/reset-for-v1-audit.yml"
+
+permissions:
+  actions: write
+  contents: write
+  issues: write
+  pull-requests: write
+
+jobs:
+  reset:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Mettre tous les workflows d'étapes en pause
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          set -euo pipefail
+          for wf in \
+            0-start-exercise.yml \
+            1-create-a-branch.yml \
+            2-commit-a-file.yml \
+            3-open-a-pull-request.yml \
+            4-merge-your-pull-request.yml
+          do
+            gh api --method PUT "repos/${GITHUB_REPOSITORY}/actions/workflows/$wf/disable" || true
+          done
+
+      - name: Fermer le test précédent et supprimer sa branche
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh pr close 4 || true
+          gh issue close 3 --reason completed || true
+          gh api --method DELETE "repos/${GITHUB_REPOSITORY}/git/refs/heads/my-first-branch" || true
+
+      - name: Récupérer le dépôt de test
+        uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803
+        with:
+          path: target
+          fetch-depth: 0
+
+      - name: Récupérer le template canonique
+        uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803
+        with:
+          repository: ENSTARobotics/tutorial-github-basics
+          ref: main
+          path: source
+
+      - name: Réinitialiser le contenu hors workflows
+        shell: bash
+        run: |
+          set -euo pipefail
+          rsync -a --delete \
+            --exclude '.git' \
+            --exclude '.github/workflows/' \
+            source/ target/
+
+      - name: Committer la réinitialisation
+        working-directory: target
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          if ! git diff --cached --quiet; then
+            git commit -m "Réinitialiser le contenu pour le test V1 final"
+            git push
+          fi
+
+      - name: Réactiver Step 0
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh api --method PUT "repos/${GITHUB_REPOSITORY}/actions/workflows/0-start-exercise.yml/enable"
