@@ -17,7 +17,7 @@ Ouvrir une pull request ne modifie pas encore `main`. Tu demandes simplement : �
 
 Après ton commit, GitHub peut afficher **Compare & pull request** :
 
-![Bouton Compare & pull request](../images/compare-pull-request-button.png)
+![Bouton Compare & pull request](https://github.com/FIPATECH/github-basics2/blob/main/.github/images/compare-pull-request-button.png?raw=true)
 
 Tu peux cliquer dessus. Sinon, utilise directement :
 
@@ -31,7 +31,7 @@ Si tu passes par l'interface manuelle :
    - **base** : `main`
    - **compare** : `my-first-branch`
 
-   ![Choix des branches d'une pull request](../images/branch-selection-comparison.png)
+   ![Choix des branches d'une pull request](https://github.com/FIPATECH/github-basics2/blob/main/.github/images/branch-selection-comparison.png?raw=true)
 
 4. Clique sur **Create pull request**.
 
@@ -59,7 +59,7 @@ Puis ajoute une courte description, par exemple :
 J'ai ajouté PROFILE.md afin de pratiquer mon premier cycle de contribution sur GitHub.
 ```
 
-![Formulaire de création d'une pull request](../images/create-pull-request-form.png)
+![Formulaire de création d'une pull request](https://github.com/FIPATECH/github-basics2/blob/main/.github/images/create-pull-request-form.png?raw=true)
 
 Clique enfin sur **Create pull request**.
 

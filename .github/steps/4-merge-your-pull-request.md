@@ -34,7 +34,7 @@ Un **merge** intègre les changements de ta branche dans la branche de destinati
 
 Après le merge, `PROFILE.md` fera partie de la version principale du dépôt.
 
-![Bouton Merge pull request](../images/merge-pull-request-button.png)
+![Bouton Merge pull request](https://github.com/FIPATECH/github-basics2/blob/main/.github/images/merge-pull-request-button.png?raw=true)
 
 ### Activité : merger la pull request
 
@@ -42,7 +42,7 @@ Après le merge, `PROFILE.md` fera partie de la version principale du dépôt.
 2. Clique sur **Confirm merge**.
 3. Une fois le merge terminé, clique sur **Delete branch** si GitHub te le propose.
 
-   ![Bouton Delete branch](../images/delete-branch-button.png)
+   ![Bouton Delete branch](https://github.com/FIPATECH/github-basics2/blob/main/.github/images/delete-branch-button.png?raw=true)
 
 > [!NOTE]
 > Si le bouton de merge est temporairement désactivé, attends la fin des checks puis actualise la page.
