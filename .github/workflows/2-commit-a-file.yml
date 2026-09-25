@@ -8,6 +8,10 @@ on:
       - "PROFILE.md"
   workflow_dispatch:
 
+concurrency:
+  group: github-basics-step-2-${{ github.repository }}
+  cancel-in-progress: true
+
 permissions:
   contents: read
   actions: write
@@ -153,6 +157,22 @@ jobs:
           if [ "$next_state" != "active" ]; then
             gh api --method PUT "repos/${GITHUB_REPOSITORY}/actions/workflows/3-open-a-pull-request.yml/enable"
           fi
+
+          for attempt in {1..10}; do
+            next_state="$(gh api "repos/${GITHUB_REPOSITORY}/actions/workflows/3-open-a-pull-request.yml" --jq '.state')"
+            if [ "$next_state" = "active" ]; then
+              break
+            fi
+            sleep 1
+          done
+
+          if [ "$next_state" != "active" ]; then
+            echo "Le workflow suivant n'est pas devenu actif à temps."
+            exit 1
+          fi
+
+          # Laisse à GitHub le temps d'enregistrer un événement déjà parti.
+          sleep 2
 
           head_sha="$(gh api "repos/${GITHUB_REPOSITORY}/git/ref/heads/my-first-branch" --jq '.object.sha')"
           pr_number="$(gh pr list --head my-first-branch --base main --state all --limit 20 --json number,headRefOid --jq ".[] | select(.headRefOid == \"$head_sha\") | .number" | head -n 1)"
