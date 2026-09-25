@@ -25,16 +25,16 @@ my-first-branch
 1. Ouvre la page principale du dépôt dans un nouvel onglet.
 2. Vérifie que tu es dans l'onglet **Code**.
 
-   ![Onglet Code](https://github.com/FIPATECH/github-basics2/blob/main/.github/images/code-tab-highlight.png?raw=true)
+   ![Onglet Code](../images/code-tab-highlight.png)
 
 3. Ouvre le menu qui affiche actuellement `main`.
 
-   <img width="300" alt="Sélecteur de branche GitHub" src="https://github.com/FIPATECH/github-basics2/blob/main/.github/images/branch-selection-dropdown.png?raw=true">
+   <img width="300" alt="Sélecteur de branche GitHub" src="../images/branch-selection-dropdown.png">
 
 4. Dans **Find or create a branch...**, saisis exactement `my-first-branch`.
 5. Clique sur **Create branch: my-first-branch from main**.
 
-   <img width="300" alt="Création de la branche my-first-branch" src="https://github.com/FIPATECH/github-basics2/blob/main/.github/images/create-branch-prompt.png?raw=true">
+   <img width="300" alt="Création de la branche my-first-branch" src="../images/create-branch-prompt.png">
 
 GitHub bascule automatiquement sur la nouvelle branche.
 
